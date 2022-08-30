@@ -8,8 +8,8 @@ data class EmployeeResponse(
     @Json(name = "phone_number") val phoneNumber: String? = null,
     @Json(name = "email_address") val emailAddress: String? = null,
     val biography: String? = null,
-    @Json(name = "photo_url_small") val photoUrlSmall: String? = null,
-    @Json(name = "photo_url_large") val photoUrlLarge: String? = null,
+    val photoUrlSmall: String,
+    val photoUrlLarge: String,
     val team: String? = null,
     @Json(name = "employee_type") val employeeType: EmployeeTypeResponse? = null,
 )

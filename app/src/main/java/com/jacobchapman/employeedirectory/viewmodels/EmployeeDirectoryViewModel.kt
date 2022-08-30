@@ -26,28 +26,14 @@ class EmployeeDirectoryViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _activeFilter = MutableStateFlow<FilterViewData?>(null)
     private val _initializeFilters = MutableSharedFlow<Unit>(replay = 0)
 
-    val filterViewData: StateFlow<List<FilterViewData>> by lazy {
-        combine(_activeFilter, getEmployeeDirectoryFiltersUseCase()) { activeFilter, filters ->
-            filters.map { filter ->
-                FilterViewData(
-                    filter.name,
-                    filter.name == activeFilter?.name,
-                    filter.filterPredicate
-                )
-            }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-    }
     val directory: StateFlow<MainScreenViewState> =
-        combine(_activeFilter, getEmployeeDirectoryUseCase()) { activeFilter, domainData ->
+        getEmployeeDirectoryUseCase().mapLatest { domainData ->
             val viewState = domainData.toViewState { employees ->
                 (refreshing as MutableStateFlow).value = false
                 val employeesViewData =
-                    employees.filter(activeFilter?.predicate ?: { true }).map { employee ->
-                        employee.toViewData()
-                    }
+                    employees.map { it.toViewData() }
                 if (employeesViewData.isEmpty()) {
                     ViewState.Empty("No Employees Found.")
                 } else {
@@ -76,15 +62,6 @@ class EmployeeDirectoryViewModel @Inject constructor(
 
     fun getFilters() {
         _initializeFilters.tryEmit(Unit)
-    }
-
-    fun filterSelected(filter: FilterViewData) {
-        if (_activeFilter.value?.name == filter.name) {
-            // clear out the filer
-            _activeFilter.value = null
-        } else {
-            _activeFilter.value = filter
-        }
     }
 }
 
