@@ -13,4 +13,5 @@ the library version can be found in the [Versions] file found in the `buildSrc` 
 ## Work Items 
 - Add Filter UI
 - Apply Filter Logic to list
+  - Filter Employee List based on Team and/or Type
 - Add Second Screen for Employee Details
